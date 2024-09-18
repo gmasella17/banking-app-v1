@@ -1,6 +1,7 @@
 package com.gmasella.banking.controller;
 
 import com.gmasella.banking.dto.AccountDTO;
+import com.gmasella.banking.dto.TransactionDTO;
 import com.gmasella.banking.dto.TransferFundsDTO;
 import com.gmasella.banking.service.AccountService;
 import org.springframework.http.HttpStatus;
@@ -65,6 +66,13 @@ public class AccountController {
     public ResponseEntity<String> transferFunds(@RequestBody TransferFundsDTO transferFundsDTO){
         accountService.transferFunds(transferFundsDTO);
         return ResponseEntity.ok("Transfer Successful");
+    }
+
+    @GetMapping("/{id}/transactions")
+    public ResponseEntity<List<TransactionDTO>> getAccountTransactions(@PathVariable("id") Long accountId){
+
+        List<TransactionDTO> transactions = accountService.getAccountTransactions(accountId);
+        return ResponseEntity.ok(transactions);
     }
 
 }

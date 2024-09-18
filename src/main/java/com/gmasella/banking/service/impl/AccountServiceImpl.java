@@ -1,6 +1,7 @@
 package com.gmasella.banking.service.impl;
 
 import com.gmasella.banking.dto.AccountDTO;
+import com.gmasella.banking.dto.TransactionDTO;
 import com.gmasella.banking.dto.TransferFundsDTO;
 import com.gmasella.banking.entity.Account;
 import com.gmasella.banking.entity.Transaction;
@@ -136,7 +137,26 @@ public class AccountServiceImpl implements AccountService {
         transactionRepository.save(transaction);
     }
 
-    public void saveTransaction(Long id, double amount, TransactionType transactionType){
+    @Override
+    public List<TransactionDTO> getAccountTransactions(Long accountId) {
+
+        List<Transaction> transactions = transactionRepository.findByAccountIdOrderByTimestampDesc(accountId);
+
+        return transactions.stream().map(this::convertEntityToDTO).collect(Collectors.toList());
+    }
+
+    private TransactionDTO convertEntityToDTO(Transaction transaction){
+
+        return new TransactionDTO(
+                transaction.getId(),
+                transaction.getAccountId(),
+                transaction.getAmount(),
+                transaction.getTransactionType(),
+                transaction.getTimestamp()
+        );
+    }
+
+    private void saveTransaction(Long id, double amount, TransactionType transactionType){
 
         Transaction transaction = new Transaction();
         transaction.setAccountId(id);
