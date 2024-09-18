@@ -101,6 +101,9 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(()-> new AccountException("Account does not exist"));
 
         // transfer the funds
+        if(fromAccount.getBalance() < transferFundsDTO.amount()){
+            throw new RuntimeException("Insufficient Funds!");
+        }
         fromAccount.setBalance(fromAccount.getBalance() - transferFundsDTO.amount());
         toAccount.setBalance(toAccount.getBalance() + transferFundsDTO.amount());
 
