@@ -3,13 +3,17 @@ package com.gmasella.banking.service.impl;
 import com.gmasella.banking.dto.AccountDTO;
 import com.gmasella.banking.dto.TransferFundsDTO;
 import com.gmasella.banking.entity.Account;
+import com.gmasella.banking.entity.Transaction;
 import com.gmasella.banking.exception.AccountException;
 import com.gmasella.banking.mapper.AccountMapper;
 import com.gmasella.banking.repository.AccountRepository;
+import com.gmasella.banking.repository.TransactionRepository;
 import com.gmasella.banking.service.AccountService;
+import com.gmasella.banking.service.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,9 +22,18 @@ public class AccountServiceImpl implements AccountService {
 
     private AccountRepository accountRepository;
 
+    private TransactionRepository transactionRepository;
 
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    private static final String TRANSACTION_TYPE_TRANSFER = "TRANSFER";
+
+
+
+
+
+    public AccountServiceImpl(AccountRepository accountRepository,
+                              TransactionRepository transactionRepository) {
         this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     @Override
@@ -50,6 +63,8 @@ public class AccountServiceImpl implements AccountService {
         double total = account.getBalance() + amount;
         account.setBalance(total);
         Account savedAccount = accountRepository.save(account);
+        saveTransaction(id, amount, TransactionType.DEPOSIT);
+
         return AccountMapper.mapToAccountDTO(savedAccount);
     }
 
@@ -66,6 +81,8 @@ public class AccountServiceImpl implements AccountService {
         double total = account.getBalance() - amount;
         account.setBalance(total);
         Account savedAccount = accountRepository.save(account);
+
+        saveTransaction(id, amount, TransactionType.WITHDRAW);
 
         return AccountMapper.mapToAccountDTO(savedAccount);
     }
@@ -109,6 +126,25 @@ public class AccountServiceImpl implements AccountService {
 
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
+
+        Transaction transaction = new Transaction();
+        transaction.setAccountId(transferFundsDTO.fromAccountId());
+        transaction.setAmount(transferFundsDTO.amount());
+        transaction.setTransactionType(TransactionType.TRANSFER);
+        transaction.setTimestamp(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
+    }
+
+    public void saveTransaction(Long id, double amount, TransactionType transactionType){
+
+        Transaction transaction = new Transaction();
+        transaction.setAccountId(id);
+        transaction.setAmount(amount);
+        transaction.setTransactionType(TransactionType.valueOf(transactionType.name()));
+        transaction.setTimestamp(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
     }
 
 
