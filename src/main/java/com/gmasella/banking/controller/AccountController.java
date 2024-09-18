@@ -1,6 +1,7 @@
 package com.gmasella.banking.controller;
 
 import com.gmasella.banking.dto.AccountDTO;
+import com.gmasella.banking.dto.TransferFundsDTO;
 import com.gmasella.banking.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,12 @@ public class AccountController {
         accountService.deleteAccount(id);
         return ResponseEntity.ok("Successfully deleted Account.");
 
+    }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<String> transferFunds(@RequestBody TransferFundsDTO transferFundsDTO){
+        accountService.transferFunds(transferFundsDTO);
+        return ResponseEntity.ok("Transfer Successful");
     }
 
 }

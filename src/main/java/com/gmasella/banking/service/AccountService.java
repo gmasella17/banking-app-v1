@@ -1,6 +1,7 @@
 package com.gmasella.banking.service;
 
 import com.gmasella.banking.dto.AccountDTO;
+import com.gmasella.banking.dto.TransferFundsDTO;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface AccountService {
     List<AccountDTO> getAllAccounts();
 
     void deleteAccount(Long id);
+
+    void transferFunds(TransferFundsDTO transferFundsDTO);
 }

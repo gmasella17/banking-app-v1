@@ -1,6 +1,7 @@
 package com.gmasella.banking.service.impl;
 
 import com.gmasella.banking.dto.AccountDTO;
+import com.gmasella.banking.dto.TransferFundsDTO;
 import com.gmasella.banking.entity.Account;
 import com.gmasella.banking.exception.AccountException;
 import com.gmasella.banking.mapper.AccountMapper;
@@ -85,6 +86,29 @@ public class AccountServiceImpl implements AccountService {
 
         accountRepository.deleteById(id);
     }
+
+    @Override
+    public void transferFunds(TransferFundsDTO transferFundsDTO) {
+
+        // get account that is sending the amount
+        Account fromAccount = accountRepository
+                .findById(transferFundsDTO.fromAccountId())
+                .orElseThrow(()-> new AccountException("Account does not exist"));
+
+        // get account that is receiving the amount
+        Account toAccount = accountRepository
+                .findById(transferFundsDTO.toAccountId())
+                .orElseThrow(()-> new AccountException("Account does not exist"));
+
+        // transfer the funds
+        fromAccount.setBalance(fromAccount.getBalance() - transferFundsDTO.amount());
+        toAccount.setBalance(toAccount.getBalance() + transferFundsDTO.amount());
+
+        accountRepository.save(fromAccount);
+        accountRepository.save(toAccount);
+    }
+
+
 
 
 }
