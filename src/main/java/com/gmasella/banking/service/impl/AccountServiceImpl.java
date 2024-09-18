@@ -11,7 +11,6 @@ import com.gmasella.banking.repository.AccountRepository;
 import com.gmasella.banking.repository.TransactionRepository;
 import com.gmasella.banking.service.AccountService;
 import com.gmasella.banking.service.TransactionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,15 +20,8 @@ import java.util.stream.Collectors;
 @Service
 public class AccountServiceImpl implements AccountService {
 
-    private AccountRepository accountRepository;
-
-    private TransactionRepository transactionRepository;
-
-    private static final String TRANSACTION_TYPE_TRANSFER = "TRANSFER";
-
-
-
-
+    private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
     public AccountServiceImpl(AccountRepository accountRepository,
                               TransactionRepository transactionRepository) {
@@ -70,7 +62,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDTO withdraw(Long id, double amount) throws Exception {
+    public AccountDTO withdraw(Long id, double amount) throws AccountException {
         Account account = accountRepository
                 .findById(id)
                 .orElseThrow(()-> new AccountException("Account does not exist"));
@@ -166,8 +158,5 @@ public class AccountServiceImpl implements AccountService {
 
         transactionRepository.save(transaction);
     }
-
-
-
 
 }
